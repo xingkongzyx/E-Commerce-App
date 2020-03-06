@@ -45,8 +45,8 @@ class userRepository {
 		// push new record to array
 		records.push(attrs);
 		// Write the updated records back to 'filename'
-        await this.writeAll(records);
-        console.log(">>>>>>>>>> CREATING USER!")
+		await this.writeAll(records);
+		console.log(">>>>>>>>>> CREATING USER!");
 	}
 
 	// Write all users to a user.json file
@@ -71,18 +71,33 @@ class userRepository {
 	async delete(id) {
 		const records = await this.getAll();
 		// 使用filter method保留数组中与要删除的id不同的elements
-        const remainingRecords = records.filter(record => record.id !== id);
-        console.log(">>>>>>>>>> DELETING USER!")
+		const remainingRecords = records.filter(record => record.id !== id);
+		console.log(">>>>>>>>>> DELETING USER!");
 		await this.writeAll(remainingRecords);
+	}
+
+	// Update the user with the given id, using given attributes
+	async update(id, attrs) {
+		const records = await this.getAll();
+		const record = records.find(record => record.id === id);
+		// If no such record, throw an error
+		if (!record) {
+			throw new Error(`Record with id ${id} not found!`);
+		}
+		// Update properties
+		Object.assign(record, attrs);
+		// Write new records to file
+		await this.writeAll(records);
 	}
 }
 
 // create users.json to store all info
 const test = async () => {
 	const userRepo = new userRepository("users.json");
-	// await userRepo.create({ email: "zhu@nau.edu", password: "1234567" });
+    // await userRepo.create({ email: "zhu@nau.edu", password: "1234567" });
+    await userRepo.update('354b67b2', {email: 'test@gmail.com'})
 	// const data = await userRepo.getAll();
-	await userRepo.delete("d3c45826");
+	// await userRepo.delete("d3c45826");
 };
 
 test();
