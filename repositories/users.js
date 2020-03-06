@@ -25,19 +25,36 @@ class userRepository {
 		const content = await fs.promises.readFile(this.filename, {
 			encoding: "utf-8"
 		});
-		// Read its contents
-		// console.log(content);
 		// Parse the contents from a JSON string to an array of javascript objects
 		const data = JSON.parse(content);
 		// Return the parsed data
 		return data;
+	}
+
+	async create(attrs) {
+		// get most recent data in the file
+		const records = await this.getAll();
+		// push new record to array
+		records.push(attrs);
+		// Write the updated records back to 'filename'
+		await this.writeAll(records);
+	}
+
+	// Write all users to a user.json file
+	async writeAll(records) {
+		await fs.promises.writeFile(
+			this.filename,
+			JSON.stringify(records, null, 2)
+		);
 	}
 }
 
 // create users.json to store all info
 const test = async () => {
 	const userRepo = new userRepository("users.json");
-	console.log(await userRepo.getAll());
+	await userRepo.create({ name: "zhu", password: "1234567" });
+	const data = await userRepo.getAll();
+	console.log(data);
 };
 
 test();
