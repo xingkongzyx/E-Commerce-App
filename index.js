@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require('body-parser')
+const user = require("./repositories/users")
 // app is an object that describes all the different things that our web server can do.
 const app = express();
 app.use(bodyParser.urlencoded({extended: true}))

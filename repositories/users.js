@@ -100,7 +100,7 @@ class userRepository {
 					found = false;
 				}
 			}
-            // 如果比较之后found还是真的,说明匹配成功,返回相应record
+			// 如果比较之后found还是真的,说明匹配成功,返回相应record
 			if (found) {
 				return record;
 			}
@@ -108,14 +108,4 @@ class userRepository {
 	}
 }
 
-// create users.json to store all info
-const test = async () => {
-	const userRepo = new userRepository("users.json");
-	// await userRepo.create({ email: "zhu@nau.edu", password: "1234567" });
-	const user = await userRepo.filter({ id: "8fb4d372", password: "7654321", email: "7654321@gmail.com" });
-	console.log(user);
-	// const data = await userRepo.getAll();
-	// await userRepo.delete("d3c45826");
-};
-
-test();
+module.exports = new userRepository("users.json");
