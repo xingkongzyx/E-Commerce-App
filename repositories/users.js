@@ -26,16 +26,18 @@ class userRepository {
 			encoding: "utf-8"
 		});
 		// Read its contents
-		console.log(content);
-		// Parse the contents
+		// console.log(content);
+		// Parse the contents from a JSON string to an array of javascript objects
+		const data = JSON.parse(content);
 		// Return the parsed data
+		return data;
 	}
 }
 
 // create users.json to store all info
 const test = async () => {
 	const userRepo = new userRepository("users.json");
-	await userRepo.getAll();
+	console.log(await userRepo.getAll());
 };
 
 test();
