@@ -89,13 +89,31 @@ class userRepository {
 		// Write new records to file
 		await this.writeAll(records);
 	}
+
+	// Finds one user with given filters
+	async filter(filters) {
+		const records = await this.getAll();
+		for (let record of records) {
+			let found = true;
+			for (let key in filters) {
+				if (record[key] !== filters[key]) {
+					found = false;
+				}
+			}
+            // 如果比较之后found还是真的,说明匹配成功,返回相应record
+			if (found) {
+				return record;
+			}
+		}
+	}
 }
 
 // create users.json to store all info
 const test = async () => {
 	const userRepo = new userRepository("users.json");
-    // await userRepo.create({ email: "zhu@nau.edu", password: "1234567" });
-    await userRepo.update('354b67b2', {email: 'test@gmail.com'})
+	// await userRepo.create({ email: "zhu@nau.edu", password: "1234567" });
+	const user = await userRepo.filter({ id: "8fb4d372", password: "7654321", email: "7654321@gmail.com" });
+	console.log(user);
 	// const data = await userRepo.getAll();
 	// await userRepo.delete("d3c45826");
 };
