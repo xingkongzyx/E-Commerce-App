@@ -46,7 +46,6 @@ class userRepository {
 		records.push(attrs);
 		// Write the updated records back to 'filename'
 		await this.writeAll(records);
-		console.log(">>>>>>>>>> CREATING USER!");
 	}
 
 	// Write all users to a user.json file
@@ -91,7 +90,7 @@ class userRepository {
 	}
 
 	// Finds one user with given filters
-	async filter(filters) {
+	async getOneBy(filters) {
 		const records = await this.getAll();
 		for (let record of records) {
 			let found = true;
