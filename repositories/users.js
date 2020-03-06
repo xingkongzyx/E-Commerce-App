@@ -1,5 +1,5 @@
 const fs = require("fs");
-
+const crypto = require("crypto");
 class userRepository {
 	// constructor方程用于检查是否提供存储数据的file
 	// constructor不允许被async
@@ -31,13 +31,22 @@ class userRepository {
 		return data;
 	}
 
+	// generates a random id
+	randomId() {
+		// Use randomBytes得到随机四个bytes然后使用toString("hex")将其变为16进制string
+		return crypto.randomBytes(4).toString("hex");
+	}
+
 	async create(attrs) {
+		// Add id property
+		attrs.id = this.randomId();
 		// get most recent data in the file
 		const records = await this.getAll();
 		// push new record to array
 		records.push(attrs);
 		// Write the updated records back to 'filename'
-		await this.writeAll(records);
+        await this.writeAll(records);
+        console.log(">>>>>>>>>> CREATING USER!")
 	}
 
 	// Write all users to a user.json file
@@ -47,14 +56,33 @@ class userRepository {
 			JSON.stringify(records, null, 2)
 		);
 	}
+
+	// Find the user with given id
+	async getOne(id) {
+		// Get all records
+		const records = await this.getAll();
+		// 如果找到返回record element, 如果没找到返回undefined
+		return records.find(record => {
+			return record.id === id;
+		});
+	}
+
+	// Delete the user with given id
+	async delete(id) {
+		const records = await this.getAll();
+		// 使用filter method保留数组中与要删除的id不同的elements
+        const remainingRecords = records.filter(record => record.id !== id);
+        console.log(">>>>>>>>>> DELETING USER!")
+		await this.writeAll(remainingRecords);
+	}
 }
 
 // create users.json to store all info
 const test = async () => {
 	const userRepo = new userRepository("users.json");
-	await userRepo.create({ name: "zhu", password: "1234567" });
-	const data = await userRepo.getAll();
-	console.log(data);
+	// await userRepo.create({ email: "zhu@nau.edu", password: "1234567" });
+	// const data = await userRepo.getAll();
+	await userRepo.delete("d3c45826");
 };
 
 test();
