@@ -45,14 +45,17 @@ class userRepository {
 
 	async create(attrs) {
 		// Add id property
-        attrs.id = this.randomId();
-        // Generate a random salt string
-        const salt = crypto.randomBytes(8).toString('hex');
-        // Hash password and salt, 此时scypt是promise version
-        const hashedBuffer = await scrypt(attrs.password, salt, 64);
-        // Generate new record with new hash password
-        const record = {...attrs, password: `${hashedBuffer.toString('hex')}.${salt}`};
-        console.log("salt is ", salt)
+		attrs.id = this.randomId();
+		// Generate a random salt string
+		const salt = crypto.randomBytes(8).toString("hex");
+		// Hash password and salt, 此时scypt是promise version
+		const hashedBuffer = await scrypt(attrs.password, salt, 64);
+		// Generate new record with new hash password
+		const record = {
+			...attrs,
+			password: `${hashedBuffer.toString("hex")}.${salt}`
+		};
+		console.log("salt is ", salt);
 		// get most recent data in the file
 		const records = await this.getAll();
 		// push new record to array
@@ -61,6 +64,17 @@ class userRepository {
 		await this.writeAll(records);
 		// Finally return the object with user id so that can use for cookies later
 		return record;
+	}
+
+    // savedPass: password saved in your db, 'hashed.salt'
+    // suppliedPass: password given to us by a user trying sign in
+	async comparePasswords(savedPass, suppliedPass) {
+		// Extract hashed psasword and salt from db
+		const [oldHashedPassword, salt] = savedPass.split(".");
+		// Generate new hashed password using suppliedPass
+		const newHashedPassword = await scrypt(suppliedPass, salt, 64);
+		// Compare two hashed passwords
+		return newHashedPassword === oldHashedPassword;
 	}
 
 	// Write all users to a user.json file
