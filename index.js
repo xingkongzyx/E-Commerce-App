@@ -76,6 +76,7 @@ app.get("/signin", (req, res) => {
 });
 
 app.post("/signin", async (req, res) => {
+	// req.body includes all information user entered in the form
 	const { email, password } = req.body;
 	// 验证邮箱是否存在
 	const user = await usersRepo.getOneBy({ email });
@@ -83,12 +84,12 @@ app.post("/signin", async (req, res) => {
 		return res.send("Email not found");
 	}
 	// 验证密码是否匹配
-	if (password !== user.password) {
+	if (!(await usersRepo.comparePasswords(user.password, password))) {
 		return res.send("Password not match!");
 	}
 	// 登录成功-设置cookie使我们的用户被认为是被验证过的
-    req.session.userID = user.id;
-    res.send(`ID ${req.session.userID} You are signed In`)
+	req.session.userID = user.id;
+	res.send(`ID ${req.session.userID} You are signed In`);
 });
 
 // tell express to watch for incoming request on port 3000

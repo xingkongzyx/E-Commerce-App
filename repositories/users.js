@@ -66,15 +66,16 @@ class userRepository {
 		return record;
 	}
 
-    // savedPass: password saved in your db, 'hashed.salt'
-    // suppliedPass: password given to us by a user trying sign in
+	// savedPass: password saved in your db, 'hashed.salt'
+	// suppliedPass: password given to us by a user trying sign in
 	async comparePasswords(savedPass, suppliedPass) {
 		// Extract hashed psasword and salt from db
 		const [oldHashedPassword, salt] = savedPass.split(".");
-		// Generate new hashed password using suppliedPass
-		const newHashedPassword = await scrypt(suppliedPass, salt, 64);
+        // Generate new hashed password using suppliedPass
+        // 注意scrypt返回一个buffer需要在比较前使用toString()
+		const newHashedPasswordBuf = await scrypt(suppliedPass, salt, 64);
 		// Compare two hashed passwords
-		return newHashedPassword === oldHashedPassword;
+		return newHashedPasswordBuf.toString("hex") === oldHashedPassword;
 	}
 
 	// Write all users to a user.json file
