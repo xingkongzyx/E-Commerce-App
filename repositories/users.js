@@ -1,6 +1,6 @@
 const fs = require("fs");
 const crypto = require("crypto");
-const { check, validationResult } = require('express-validator');
+
 
 // 为了使用 util.promisify()
 const util = require("util");
