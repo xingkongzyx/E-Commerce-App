@@ -1,5 +1,11 @@
 const fs = require("fs");
 const crypto = require("crypto");
+
+// 为了使用 util.promisify()
+const util = require("util");
+// scrypt(用于hash密码)方程的promise版本
+const scrypt = util.promisify(crypto.scrypt);
+
 class userRepository {
 	// constructor方程用于检查是否提供存储数据的file
 	// constructor不允许被async
@@ -39,15 +45,22 @@ class userRepository {
 
 	async create(attrs) {
 		// Add id property
-		attrs.id = this.randomId();
+        attrs.id = this.randomId();
+        // Generate a random salt string
+        const salt = crypto.randomBytes(8).toString('hex');
+        // Hash password and salt, 此时scypt是promise version
+        const hashedBuffer = await scrypt(attrs.password, salt, 64);
+        // Generate new record with new hash password
+        const record = {...attrs, password: `${hashedBuffer.toString('hex')}.${salt}`};
+        console.log("salt is ", salt)
 		// get most recent data in the file
 		const records = await this.getAll();
 		// push new record to array
-		records.push(attrs);
+		records.push(record);
 		// Write the updated records back to 'filename'
-        await this.writeAll(records);
-        // Finally return the object with user id so that can use for cookies later
-        return attrs;
+		await this.writeAll(records);
+		// Finally return the object with user id so that can use for cookies later
+		return record;
 	}
 
 	// Write all users to a user.json file
