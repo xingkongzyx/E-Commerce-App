@@ -45,7 +45,9 @@ class userRepository {
 		// push new record to array
 		records.push(attrs);
 		// Write the updated records back to 'filename'
-		await this.writeAll(records);
+        await this.writeAll(records);
+        // Finally return the object with user id so that can use for cookies later
+        return attrs;
 	}
 
 	// Write all users to a user.json file
