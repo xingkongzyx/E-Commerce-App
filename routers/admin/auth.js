@@ -3,6 +3,12 @@ const { check, validationResult } = require("express-validator");
 const usersRepo = require("../../repositories/users");
 const signupTemplate = require("../../views/admin/auth/signup");
 const signinTemplate = require("../../views/admin/auth/signin");
+const {
+	requireEmail,
+	requirePassword,
+	requirePasswordConfirmation
+} = require("./validators");
+
 // An onject keep track of all route handlers
 // Then link it with app of index.js
 const router = express.Router();
@@ -15,35 +21,7 @@ router.get("/signup", (req, res) => {
 // bodyParser.urlencoded({extended: true})是专门用于接收表格数据的
 router.post(
 	"/signup",
-	[
-        // check(property), validator会从req.body中寻找对应的property
-        check("email")
-			.trim()
-			.normalizeEmail()
-			.isEmail()
-			.custom(async email => {
-				// Check if user already signs up with this email
-				const existingUser = await usersRepo.getOneBy({ email });
-
-				if (existingUser) {
-					// If already signing up with this email
-					throw new Error("Email in use");
-				}
-			}),
-		check("password")
-			.trim()
-			.isLength({ min: 4, max: 20 }),
-		check("passwordConfirmation")
-			.trim()
-			.isLength({ min: 4, max: 20 })
-			.custom((passwordConfirmation, { req }) => {
-				const { password } = req.body;
-				// Check if password and passwordConfirmation are same
-				if (password !== passwordConfirmation) {
-					throw new Error("Password must match");
-				}
-			})
-	],
+	[requireEmail, requirePassword, requirePasswordConfirmation],
 	async (req, res) => {
 		const errors = validationResult(req);
 		console.log(errors);
