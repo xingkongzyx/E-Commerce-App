@@ -81,10 +81,12 @@ module.exports = {
 		}),
 	requireTitle: check("title")
 		.trim()
-		.isLength({ min: 4, max: 40 }),
+        .isLength({ min: 4, max: 40 })
+        .withMessage("Must be between 4 and 40 characters"),
 	requirePrice: check("price")
 		.trim()
 		.toFloat()
 		// 且float number最小值为1
-		.isFloat({ min: 1 })
+        .isFloat({ min: 1 })
+        .withMessage("Must be a number greater than 1")
 };
