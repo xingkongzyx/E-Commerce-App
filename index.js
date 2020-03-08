@@ -3,9 +3,10 @@ const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
 // Inport the router
 const authRouter = require("./routers/admin/auth");
-
+const productsRouter = require("./routers/admin/products")
 // app is an object that describes all the different things that our web server can do.
 const app = express();
+app.use(express.static("public"))
 app.use(bodyParser.urlencoded({ extended: true }));
 // 用于encrypt all the informaton stored in the cookie
 app.use(
@@ -13,8 +14,9 @@ app.use(
 		keys: ["lkasld235j"]
 	})
 );
-// 位置很重要在另两个app.use()后面
+// 位置很重要在另两个app.use()后面; associate the router
 app.use(authRouter);
+app.use(productsRouter)
 
 const port = process.env.PORT || 3000;
 
