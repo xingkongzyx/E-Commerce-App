@@ -38,8 +38,8 @@ module.exports = {
 			} else {
 				return true;
 			}
-        }),
-        
+		}),
+
 	/* FOLLOWING TWO VALIDATIONS ARE USED FOR SIGNIN PAGE */
 	confirmEmail: check("email")
 		.trim()
@@ -78,5 +78,13 @@ module.exports = {
 			} else {
 				return true;
 			}
-		})
+		}),
+	requireTitle: check("title")
+		.trim()
+		.isLength({ min: 4, max: 40 }),
+	requirePrice: check("price")
+		.trim()
+		.toFloat()
+		// 且float number最小值为1
+		.isFloat({ min: 1 })
 };
