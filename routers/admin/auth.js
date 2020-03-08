@@ -28,6 +28,7 @@ router.post(
 		const errors = validationResult(req);
 
 		console.log(errors);
+		// If there is an error when validating
 		if (!errors.isEmpty()) {
 			return res.send(signupTemplate({ req, errors }));
 		}
@@ -60,7 +61,10 @@ router.post("/signin", [confirmEmail, confirmPassword], async (req, res) => {
 	// req.body includes all information user entered in the form
 	const { email } = req.body;
 	const errors = validationResult(req);
-	console.log(errors);
+	// If there is an error when validating
+	if (!errors.isEmpty()) {
+		return res.send(signinTemplate({ req, errors }));
+	}
 	const user = await usersRepo.getOneBy({ email });
 
 	// 登录成功-设置cookie使我们的用户被认为是被验证过的
