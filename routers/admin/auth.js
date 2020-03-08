@@ -1,12 +1,14 @@
 const express = require("express");
-const { check, validationResult } = require("express-validator");
+const { validationResult } = require("express-validator");
 const usersRepo = require("../../repositories/users");
 const signupTemplate = require("../../views/admin/auth/signup");
 const signinTemplate = require("../../views/admin/auth/signin");
 const {
 	requireEmail,
 	requirePassword,
-	requirePasswordConfirmation
+	requirePasswordConfirmation,
+	confirmEmail,
+	confirmPassword
 } = require("./validators");
 
 // An onject keep track of all route handlers
@@ -24,9 +26,13 @@ router.post(
 	[requireEmail, requirePassword, requirePasswordConfirmation],
 	async (req, res) => {
 		const errors = validationResult(req);
+
 		console.log(errors);
+		if (!errors.isEmpty()) {
+			return res.send(signupTemplate({ req, errors }));
+		}
 		// destructure the info
-		const { email, password, passwordConfirmation } = req.body;
+		const { email, password } = req.body;
 
 		// Create an user in our user repo to represent this person
 		const user = await usersRepo.create({ email, password });
@@ -50,18 +56,13 @@ router.get("/signin", (req, res) => {
 	res.send(signinTemplate({ req }));
 });
 
-router.post("/signin", async (req, res) => {
+router.post("/signin", [confirmEmail, confirmPassword], async (req, res) => {
 	// req.body includes all information user entered in the form
-	const { email, password } = req.body;
-	// 验证邮箱是否存在
+	const { email } = req.body;
+	const errors = validationResult(req);
+	console.log(errors);
 	const user = await usersRepo.getOneBy({ email });
-	if (!user) {
-		return res.send("Email not found");
-	}
-	// 验证密码是否匹配
-	if (!(await usersRepo.comparePasswords(user.password, password))) {
-		return res.send("Password not match!");
-	}
+
 	// 登录成功-设置cookie使我们的用户被认为是被验证过的
 	req.session.userID = user.id;
 	res.send(`ID ${req.session.userID} You are signed In`);
