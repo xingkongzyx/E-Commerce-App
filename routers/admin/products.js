@@ -5,6 +5,7 @@ const { handleErrors, requireAuth } = require("./middlewares");
 const productsRepo = require("../../repositories/products");
 const productsNewTemplate = require("../../views/admin/products/new");
 const productsIndexTemplate = require("../../views/admin/products/index");
+const productsEditTemplate = require("../../views/admin/products/edit");
 const { requireTitle, requirePrice } = require("./validators");
 
 // Create a new router
@@ -40,5 +41,22 @@ router.post(
 		res.redirect("/admin/products");
 	}
 );
+
+// Used to edit a product
+router.get("/admin/products/:id/edit", requireAuth, async (req, res) => {
+	const id = req.params.id;
+	// Try to find the product based on id
+	const product = await productsRepo.getOne(id);
+	// If not find the product
+	if (!product) {
+		res.redirect("/admin/products");
+	}
+	res.send(productsEditTemplate({ product }));
+});
+
+// Used to receive the submition of edit form
+router.post("/admin/products/:id/edit", requireAuth, async (req, res) => {
+	res.send("received");
+});
 
 module.exports = router;
