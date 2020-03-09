@@ -1,5 +1,5 @@
 const express = require("express");
-const { validationResult } = require("express-validator");
+const { handleErrors } = require("./middlewares");
 const usersRepo = require("../../repositories/users");
 const signupTemplate = require("../../views/admin/auth/signup");
 const signinTemplate = require("../../views/admin/auth/signin");
@@ -16,7 +16,7 @@ const {
 const router = express.Router();
 
 router.get("/signup", (req, res) => {
-	res.send(signupTemplate({ req }));
+	res.send(signupTemplate({}));
 });
 
 // 接收表格
@@ -24,14 +24,8 @@ router.get("/signup", (req, res) => {
 router.post(
 	"/signup",
 	[requireEmail, requirePassword, requirePasswordConfirmation],
+	handleErrors(signinTemplate),
 	async (req, res) => {
-		const errors = validationResult(req);
-
-		console.log(errors);
-		// If there is an error when validating
-		if (!errors.isEmpty()) {
-			return res.send(signupTemplate({ req, errors }));
-		}
 		// destructure the info
 		const { email, password } = req.body;
 
@@ -54,22 +48,23 @@ router.get("/signout", (req, res) => {
 
 // 登录用户
 router.get("/signin", (req, res) => {
-	res.send(signinTemplate({ req }));
+	res.send(signinTemplate({}));
 });
 
-router.post("/signin", [confirmEmail, confirmPassword], async (req, res) => {
-	// req.body includes all information user entered in the form
-	const { email } = req.body;
-	const errors = validationResult(req);
-	// If there is an error when validating
-	if (!errors.isEmpty()) {
-		return res.send(signinTemplate({ req, errors }));
+router.post(
+	"/signin",
+	[confirmEmail, confirmPassword],
+	handleErrors(signinTemplate),
+	async (req, res) => {
+		// req.body includes all information user entered in the form
+		const { email } = req.body;
+
+		const user = await usersRepo.getOneBy({ email });
+
+		// 登录成功-设置cookie使我们的用户被认为是被验证过的
+		req.session.userID = user.id;
+		res.send(`ID ${req.session.userID} You are signed In`);
 	}
-	const user = await usersRepo.getOneBy({ email });
-
-	// 登录成功-设置cookie使我们的用户被认为是被验证过的
-	req.session.userID = user.id;
-	res.send(`ID ${req.session.userID} You are signed In`);
-});
+);
 
 module.exports = router;
