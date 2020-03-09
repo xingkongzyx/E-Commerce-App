@@ -35,7 +35,7 @@ router.post(
 		// req.session是因为cookie library才存在的, req.session==={}
 		// 我们添加的任何信息都会被cookie session保持
 		req.session.userID = user.id;
-		res.send("Account created");
+		res.redirect("/admin/products");
 	}
 );
 
@@ -63,7 +63,7 @@ router.post(
 
 		// 登录成功-设置cookie使我们的用户被认为是被验证过的
 		req.session.userID = user.id;
-		res.send(`ID ${req.session.userID} You are signed In`);
+		res.redirect("/admin/products");
 	}
 );
 

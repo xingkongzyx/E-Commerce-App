@@ -3,19 +3,48 @@ const layout = require("../layout");
 // params: products is an array with all the products we have
 // 这里使用了destructure, 我们调用方程时传入的是{products:products},这里直接destructure
 module.exports = ({ products }) => {
-	const renderedProductsHtmlStr = products
+	const renderedProducts = products
 		// Use map to return each product html string and form an array
 		.map(product => {
-			return `<div>${product.title}</div>`;
+			return `
+      <tr>
+        <td>${product.title}</td>
+        <td>${product.price}</td>
+        <td>
+          <a href="">
+            <button class="button is-link">
+              Edit
+            </button>
+          </a>
+        </td>
+        <td>
+          <button class="button is-danger">Delete</button>
+        </td>
+      </tr>
+    `;
 		})
 		// Join all eles of an array to a big string which includes huge html code
-		.join('');
+		.join("");
 
 	return layout({
 		content: `
-        <h1 class="title">Products</h1>
-        ${renderedProductsHtmlStr}   
+      <div class="control">
+        <h1 class="subtitle">Products</h1>  
+        <a href="/admin/products/new" class="button is-primary">New Product</a>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Price</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${renderedProducts}
+        </tbody>
+      </table>
     `
-	})
+	});
 };
-
