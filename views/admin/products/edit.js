@@ -8,7 +8,8 @@ module.exports = ({ product }) => {
                 <input name="price" value="${product.price}"/>
                 <input type="file" name="image" />
                 <button>Submit</button>  
-            </form>
+                </form>
+                <img src="data:image/png;base64, ${product.image}" />
         `
 	});
 };

@@ -2,6 +2,7 @@
 const { validationResult } = require("express-validator");
 
 module.exports = {
+    // 用于处理使用express-validator后的error问题
 	handleErrors(templateFunc) {
 		return (req, res, next) => {
 			const errors = validationResult(req);
@@ -16,6 +17,7 @@ module.exports = {
 
 	requireAuth(req, res, next) {
         // check if userid sesion exists or not, if not, redirect to signin
+        // In sign in page. Will give it value
         if (!req.session.userID) {
 			return res.redirect("/signin");
         }

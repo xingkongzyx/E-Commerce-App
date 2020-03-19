@@ -55,8 +55,29 @@ router.get("/admin/products/:id/edit", requireAuth, async (req, res) => {
 });
 
 // Used to receive the submition of edit form
-router.post("/admin/products/:id/edit", requireAuth, async (req, res) => {
-	res.send("received");
-});
+router.post(
+	"/admin/products/:id/edit",
+	requireAuth,
+	[requireTitle, requirePrice],
+	handleErrors(productsEditTemplate),
+	upload.single("image"),
+	async (req, res) => {
+		// Get updated data
+		const changes = req.body;
+		// Check if the request includes an image
+		if (req.file) {
+			// Add it to changes object
+			changes.image = req.file.buffer.toString("base64");
+		}
+		try {
+			// Update the product based on the submitted form
+			await productsRepo.update(req.params.id, changes);
+		} catch (error) {
+			return res.send("Could not find the item!");
+		}
+
+		res.redirect("/admin/products");
+	}
+);
 
 module.exports = router;

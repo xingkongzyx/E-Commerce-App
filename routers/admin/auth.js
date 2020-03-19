@@ -22,7 +22,8 @@ router.get("/signup", (req, res) => {
 // 接收表格
 // bodyParser.urlencoded({extended: true})是专门用于接收表格数据的
 router.post(
-	"/signup",
+    "/signup",
+    // use express validator property
 	[requireEmail, requirePassword, requirePasswordConfirmation],
 	handleErrors(signinTemplate),
 	async (req, res) => {
