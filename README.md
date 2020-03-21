@@ -1,5 +1,7 @@
 # E-Commerce-App
 
-## Author: Yuxuan Zhu
+### Author: Yuxuan Zhu
 
-## Technologies: NoedJS
+### Technologies: NoedJS
+
+### Live demo: https://yz-e-commerce-app.herokuapp.com/
